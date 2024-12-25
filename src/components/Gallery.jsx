@@ -60,22 +60,21 @@ function Gallery() {
 
   return (
     <>
-    
-<Helmet>
-  <title>
-    {gallery?.title 
-      ? `${gallery.title} — Made with Camp Snap`
-      : 'Camp Snaps — Share your Memories'}
-  </title>
-  <meta 
-    property="og:title" 
-    content={gallery?.title 
-      ? `${gallery.title} — Made with Camp Snap`
-      : 'Camp Snaps — Share your Memories'} 
-  />
-  <meta property="og:description" content="Check out these amazing memories!" />
-  {previewImage && <meta property="og:image" content={previewImage} />}
-</Helmet>
+      <Helmet>
+        <title>
+          {gallery?.title 
+            ? `${gallery.title} — Made with Camp Snap`
+            : 'Camp Snaps — Share your Memories'}
+        </title>
+        <meta 
+          property="og:title" 
+          content={gallery?.title 
+            ? `${gallery.title} — Made with Camp Snap`
+            : 'Camp Snaps — Share your Memories'} 
+        />
+        <meta property="og:description" content="Check out these amazing memories!" />
+        {previewImage && <meta property="og:image" content={previewImage} />}
+      </Helmet>
       <div className="gallery-container">
         <h1 className="gallery-title">{gallery.title}</h1>
         <div className="image-grid">
@@ -88,6 +87,9 @@ function Gallery() {
               className="gallery-image"
             />
           ))}
+        </div>
+        <div className="gallery-footer">
+          <p>Pics taken with <a href="https://www.campsnapphoto.com/" target="_blank" rel="noopener noreferrer">Camp Snap Camera</a></p>
         </div>
         <Lightbox
           open={index >= 0}

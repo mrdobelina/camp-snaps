@@ -214,3 +214,21 @@
   object-fit: cover;
   border-radius: 4px;
 }
+
+.gallery-footer {
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.gallery-footer a {
+  color: #eea840;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.gallery-footer a:hover {
+  opacity: 0.8;
+}
