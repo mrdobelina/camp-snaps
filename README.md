@@ -1,8 +1,7 @@
-# React + Vite
+Easily share your Camp Snap memories with friends and family.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This app isn’t officially affiliated with Camp Snap (https://www.campsnapphoto.com/)—I’m just a fan!
 
-Currently, two official plugins are available:
+It was built from scratch with help from https://claude.ai. I’m not a developer, just someone who always wanted to try.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+What a time to be alive!
