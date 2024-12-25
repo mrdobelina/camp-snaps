@@ -60,12 +60,22 @@ function Gallery() {
 
   return (
     <>
-      <Helmet>
-        <title>{gallery?.title || 'Loading...'} - CampSnaps</title>
-        <meta property="og:title" content={`${gallery?.title || 'Gallery'} - Camp Snaps`} />
-        <meta property="og:description" content="Check out these amazing memories!" />
-        {previewImage && <meta property="og:image" content={previewImage} />}
-      </Helmet>
+    
+<Helmet>
+  <title>
+    {gallery?.title 
+      ? `${gallery.title} — Made with Camp Snap`
+      : 'Camp Snaps — Share your Memories'}
+  </title>
+  <meta 
+    property="og:title" 
+    content={gallery?.title 
+      ? `${gallery.title} — Made with Camp Snap`
+      : 'Camp Snaps — Share your Memories'} 
+  />
+  <meta property="og:description" content="Check out these amazing memories!" />
+  {previewImage && <meta property="og:image" content={previewImage} />}
+</Helmet>
       <div className="gallery-container">
         <h1 className="gallery-title">{gallery.title}</h1>
         <div className="image-grid">
