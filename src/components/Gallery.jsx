@@ -58,6 +58,25 @@ function Gallery() {
     return <div>Loading...</div>;
   }
 
+  const downloadImage = async (imageUrl) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      // Estraiamo il nome del file dall'URL
+      const fileName = imageUrl.split('/').pop() || 'campsnap-image.jpg';
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -77,26 +96,37 @@ function Gallery() {
       </Helmet>
       <div className="gallery-container">
         <h1 className="gallery-title">{gallery.title}</h1>
+        <p className="gallery-instructions">Save images by clicking the image, and then the download button</p>
         <div className="image-grid">
-          {gallery.images.map((url, i) => (
-            <img
-              key={i}
-              src={url}
-              alt={`Image ${i + 1}`}
-              onClick={() => setIndex(i)}
-              className="gallery-image"
-            />
-          ))}
-        </div>
+  {gallery.images.map((url, i) => (
+    <div key={i} className="image-container">
+      <img
+        src={url}
+        alt={`Image ${i + 1}`}
+        onClick={() => setIndex(i)}
+        className="gallery-image"
+      />
+      <button 
+        className="download-button"
+        onClick={(e) => {
+          e.stopPropagation();
+          downloadImage(url);
+        }}
+      >
+        Download
+      </button>
+    </div>
+  ))}
+</div>
         <div className="gallery-footer">
           <p>Pics taken with <a href="https://www.campsnapphoto.com/" target="_blank" rel="noopener noreferrer">Camp Snap Camera</a></p>
         </div>
         <Lightbox
-          open={index >= 0}
-          index={index}
-          close={() => setIndex(-1)}
-          slides={gallery.images.map(url => ({ src: url }))}
-        />
+  open={index >= 0}
+  index={index}
+  close={() => setIndex(-1)}
+  slides={gallery.images.map(url => ({ src: url }))}
+/>
       </div>
     </>
   );
