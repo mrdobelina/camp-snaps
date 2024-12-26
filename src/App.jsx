@@ -9,6 +9,7 @@ import logo from './assets/CampSnap_Logo.png'
 import DropZone from './components/DropZone'
 import { storage, db, auth } from './firebase'
 import { compressImage } from './utils/imageCompression'
+import { doc, getDoc, setDoc, increment, updateDoc } from 'firebase/firestore';
 
 function App() {
   const [files, setFiles] = useState([])
@@ -18,10 +19,45 @@ function App() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const navigate = useNavigate()
 
+  const updateTotalPhotos = async (newPhotos) => {
+    try {
+      const statsRef = doc(db, 'stats', 'photoCount');
+      const statsDoc = await getDoc(statsRef);
+      
+      if (statsDoc.exists()) {
+        // Aggiorna il contatore esistente
+        await updateDoc(statsRef, {
+          total: increment(newPhotos)
+        });
+      } else {
+        // Crea il documento se non esiste
+        await setDoc(statsRef, {
+          total: newPhotos
+        });
+      }
+    } catch (error) {
+      console.error('Error updating photo count:', error);
+    }
+  };
+
   useEffect(() => {
-    const count = localStorage.getItem('totalPhotosUploaded') || 0
-    setTotalPhotos(Number(count))
-  }, [])
+    const fetchPhotoCount = async () => {
+      try {
+        const statsRef = doc(db, 'stats', 'photoCount');
+        const statsDoc = await getDoc(statsRef);
+        if (statsDoc.exists()) {
+          setTotalPhotos(statsDoc.data().total);
+        } else {
+          setTotalPhotos(0);
+        }
+      } catch (error) {
+        console.error('Error fetching photo count:', error);
+        setTotalPhotos(0);
+      }
+    };
+  
+    fetchPhotoCount();
+  }, []);
 
   useEffect(() => {
     document.title = 'Camp Snaps - Share Your Memories'
@@ -71,20 +107,14 @@ function App() {
         images: urls,
         createdAt: new Date().toISOString()
       })
-
       setUploadProgress(90)
-
-      const newTotal = totalPhotos + files.length
-      localStorage.setItem('totalPhotosUploaded', newTotal)
-      setTotalPhotos(newTotal)
-      
+      await updateTotalPhotos(files.length);
       setUploadProgress(100)
       navigate(`/gallery/${docRef.id}`)
-      
-    } catch (error) {
-      console.error('Oops, something went wrong while uploading! Try again?', error)
-      alert('Whoops! An error occurred during the upload. Wanna give it another shot?')
-    }
+      } catch (error) {
+        console.error('Oops, something went wrong while uploading! Try again?', error)
+        alert('Whoops! An error occurred during the upload. Wanna give it another shot?')
+      }
     setUploading(false)
     setUploadProgress(0)
   }
