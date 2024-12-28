@@ -62,16 +62,30 @@ function Gallery() {
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      // Estraiamo il nome del file dall'URL
-      const fileName = imageUrl.split('/').pop() || 'campsnap-image.jpg';
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      
+      // Verifica se il dispositivo è mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Su mobile, creiamo un elemento a con attributo download
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        // Forza il download invece di aprire in una nuova tab
+        link.setAttribute('download', '');
+        link.setAttribute('target', '_blank');
+        link.click();
+      } else {
+        // Su desktop, usiamo il metodo esistente
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const fileName = imageUrl.split('/').pop() || 'campsnap-image.jpg';
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error('Error downloading image:', error);
     }
@@ -80,53 +94,55 @@ function Gallery() {
   return (
     <>
       <Helmet>
-        <title>
-          {gallery?.title 
-            ? `${gallery.title} — Made with Camp Snap`
-            : 'Camp Snaps — Share your Memories'}
-        </title>
-        <meta 
-          property="og:title" 
-          content={gallery?.title 
-            ? `${gallery.title} — Made with Camp Snap`
-            : 'Camp Snaps — Share your Memories'} 
-        />
+        <title>{gallery?.title ? `${gallery.title} — Camp Snaps` : 'Camp Snaps — Share your Memories'}</title>
+        
+        {/* Meta tag per Open Graph (Facebook, etc) */}
+        <meta property="og:title" content={gallery?.title ? `${gallery.title} — Camp Snaps` : 'Camp Snaps — Share your Memories'} />
         <meta property="og:description" content="Check out these amazing memories!" />
+        <meta property="og:type" content="website" />
         {previewImage && <meta property="og:image" content={previewImage} />}
+        
+        {/* Meta tag per Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={gallery?.title ? `${gallery.title} — Camp Snaps` : 'Camp Snaps — Share your Memories'} />
+        <meta name="twitter:description" content="Check out these amazing memories!" />
+        {previewImage && <meta name="twitter:image" content={previewImage} />}
       </Helmet>
+      
       <div className="gallery-container">
         <h1 className="gallery-title">{gallery.title}</h1>
-        <p className="gallery-instructions">Save images by clicking the image, and then the download button</p>
         <div className="image-grid">
-  {gallery.images.map((url, i) => (
-    <div key={i} className="image-container">
-      <img
-        src={url}
-        alt={`Image ${i + 1}`}
-        onClick={() => setIndex(i)}
-        className="gallery-image"
-      />
-      <button 
-        className="download-button"
-        onClick={(e) => {
-          e.stopPropagation();
-          downloadImage(url);
-        }}
-      >
-        Download
-      </button>
-    </div>
-  ))}
-</div>
+          {gallery.images.map((url, i) => (
+            <div key={i} className="image-container">
+              <img
+                src={url}
+                alt={`Image ${i + 1}`}
+                onClick={() => setIndex(i)}
+                className="gallery-image"
+              />
+              <button 
+                className="download-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  downloadImage(url);
+                }}
+              >
+                Download
+              </button>
+            </div>
+          ))}
+        </div>
+        
         <div className="gallery-footer">
           <p>Pics taken with <a href="https://www.campsnapphoto.com/" target="_blank" rel="noopener noreferrer">Camp Snap Camera</a></p>
         </div>
+        
         <Lightbox
-  open={index >= 0}
-  index={index}
-  close={() => setIndex(-1)}
-  slides={gallery.images.map(url => ({ src: url }))}
-/>
+          open={index >= 0}
+          index={index}
+          close={() => setIndex(-1)}
+          slides={gallery.images.map(url => ({ src: url }))}
+        />
       </div>
     </>
   );
